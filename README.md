@@ -1,7 +1,9 @@
-# chat-example
+# ping-pong with socket.io
 
-This is the source code for a very simple chat example used for 
-the [Getting Started](http://socket.io/get-started/chat/) guide 
-of the Socket.IO website.
+This is the source code for a very simple ping pong using following libraries
+* [socket.io](http://socket.io/) for communicating realtime with the mobile app
+* [threeJS](http://threejs.org/) for displaying the game in 3D
 
-Please refer to it to learn how to run this application.
+
+
+
