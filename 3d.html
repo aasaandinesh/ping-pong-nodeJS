@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>My first Three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<button id="console">Console</button>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.js"></script>
+		<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+		<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+		
+		<script>
+			// Our Javascript will go here.
+			$("#console").on('click',function(event){
+
+				displayInConsole();
+			});
+
+		var socket = io();	
+	socket.on('acceleration', function(msg){
+        
+        translateBat(msg);
+
+      });
+
+	var displayInConsole = function(){
+		if(acceleration !==undefined){
+		console.log("x:"+bat.position.x+ ", Vx:"+Vb.x+", acceleration: "+acceleration.x);
+	}
+	else{
+	console.log("x:"+bat.position.x+ ", Vx:"+Vb.x);	
+	}
+	};
+
+var acceleration;
+var translateBat = function(data){
+acceleration =data;
+requestAnimationFrame( render );
+displayInConsole();
+
+
+};
+
+	var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var cube = new THREE.Mesh( geometry, material );
+
+var batGeometry = new THREE.BoxGeometry( 2, 2, 0.1 );
+var batMaterial = new THREE.MeshNormalMaterial( { transparent:true, opacity:0.5,color: 0xff0000 } );
+
+var bat = new THREE.Mesh(batGeometry, batMaterial);
+scene.add( cube );
+
+
+scene.add(bat);
+bat.translateZ(2);
+
+
+camera.position.z = 5;
+var t = 0;
+var Vy = 0.5;
+var Vz = 1;
+
+var Vb = {"x":0,"y":0,"z":0};
+var clock = new THREE.Clock();
+clock.start();
+function render() {
+	requestAnimationFrame( render );
+	renderer.render( scene, camera );
+	t = clock.getDelta();
+Vy = Vy - 0.3*t;
+
+
+
+if(acceleration!=undefined){
+	Vb.x = Vb.x - acceleration.x*t;
+	//Vb.x = Vb.x + acceleration.y*t;
+	//Vb.x = Vb.x + acceleration.z*t;
+
+/*
+bat.translateY(acceleration.y*.05);
+bat.translateZ(acceleration.z*.05);
+*/
+//acceleration=undefined;
+bat.translateX(Vb.x*t);
+
+}
+//console.log(Vb.x);
+
+//console.log("x:"+bat.position.x+ " Vx"+Vb.x);
+if((bat.position.x<=-5 && Vb.x<0)|| (bat.position.x>=5 && Vb.x>0)){
+
+	Vb.x=0;
+}
+
+if(cube.position.y<0){
+	Vy *=-1;
+}
+
+if(cube.position.z>=2){
+	Vz *=-1;
+}
+
+if(cube.position.z<=-2){
+	Vz *=-1;
+}
+cube.translateZ(Vz*t);	
+cube.translateY(Vy*t);
+//cube.translateY()
+}
+render();
+
+
+		</script>
+	</body>
+</html>
